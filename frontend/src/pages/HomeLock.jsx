@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AppContext } from '../context/AppContext';
+import { toast } from 'react-toastify';
 
 const HomeLock = () => {
   const { fetchAllUrls, userAllUrls, setUserAllUrls, token } = useContext(AppContext);
@@ -12,8 +13,7 @@ const HomeLock = () => {
 
   useEffect(() => {
     fetchAllUrls();
-    userAllUrls
-  }, [userAllUrls]);
+  }, [fetchAllUrls]);
 
   const handleShorten = async () => {
     if (!url) return;
@@ -21,7 +21,7 @@ const HomeLock = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/create/`,
         { url, slug },
-        { headers: { Authorization: `bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}`} }
       );
       setShortUrl(res.data.shortUrl);
       setUserAllUrls([res.data, ...userAllUrls]);
@@ -37,11 +37,12 @@ const HomeLock = () => {
   const handleCopy = (text, idx) => {
     navigator.clipboard.writeText(text);
     setCopiedIndex(idx);
+    toast.success("Link copied!")
     setTimeout(() => setCopiedIndex(null), 1500);
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 border rounded shadow">
+    <div className="max-w-xl mx-auto mt-10 p-6 border rounded">
       <h1 className="text-2xl font-bold mb-4 text-center">Advanced URL Shortener</h1>
       <input type="url" placeholder="Enter URL" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full border rounded px-3 py-2 mb-2 focus:outline-none" />
       <input type="text" placeholder="Custom slug (optional)" value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full border rounded px-3 py-2 mb-3 focus:outline-none" />
@@ -50,22 +51,28 @@ const HomeLock = () => {
       {shortUrl && (
         <div className="flex items-center justify-between border rounded px-3 py-2 mb-4">
           <span className="truncate">{shortUrl}</span>
-          <button onClick={() => handleCopy(shortUrl, 'short')} className="ml-2 bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">{copiedIndex === 'short' ? 'Copied!' : 'Copy'}</button>
+          <button onClick={() => handleCopy(shortUrl, 'short')} className="ml-2 bg-gray-200 px-1 rounded-full hover:bg-gray-300">{copiedIndex === 'short' ? 'Copied!' : (<i class='bx bx-copy' ></i>) }</button>
         </div>
       )}
 
       <h2 className="text-xl font-semibold mb-2">Your Past URLs</h2>
 
       <div className="space-y-2">
-        {userAllUrls.map((item, idx) => (
+        {
+          userAllUrls.length > 0 ?
+        (userAllUrls.map((item, idx) => (
           <div key={item._id || idx} onClick={() => handleCopy(item.short_url, idx)} className="flex flex-col border rounded px-3 py-2 cursor-pointer hover:bg-gray-50">
             <div className="flex items-center justify-between">
               <span className="font-medium truncate">{item.short_url}</span>
-              <button onClick={(e) => { e.stopPropagation(); handleCopy(item.short_url, idx); }} className="ml-2 bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">{copiedIndex === idx ? 'Copied!' : 'Copy'}</button>
+              <button onClick={(e) => { e.stopPropagation(); handleCopy(item.short_url, idx); }} className="ml-2 bg-lime-200 p-1 h-10 w-10 rounded-full text-xl hover:bg-lime-300">{copiedIndex === idx ? <i class='bx bxs-copy' ></i> : <i class='bx bx-copy' ></i>}</button>
             </div>
             <span className="text-sm text-gray-500 truncate">{item.full_url}</span>
           </div>
-        ))}
+        ))) :
+        (
+          <div className='text-sm text-zinc-600'>No past urls</div>
+        )
+        }
       </div>
     </div>
   );

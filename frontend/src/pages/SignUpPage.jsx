@@ -2,14 +2,15 @@ import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
 
 
 
 const SignUpPage = () => {
 
 
-  
-  const { user, setUser } = useContext(AppContext)
+
+  const {setUser, setToken } = useContext(AppContext)
   const navigate = useNavigate()
 
 
@@ -23,25 +24,38 @@ const SignUpPage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault()
-    const userData = { username, email, password }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/register`, userData)
-    const data = response.data
+    try {
+      if (!username || !email || !password) {
+        return toast.error('All fields are required')
+      }
+      const userData = { username, email, password }
+      
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/register`, userData)
+      const data = response.data
 
-    if (data.success === true) {
-      setUser(data.user)
-      localStorage.setItem(data.token)
-      navigate('/home')
+      if (data.success === true) {
+        setUser(data.user)
+        localStorage.setItem("token", data.token)
+        setToken(data.token)
+        toast.success(data.message)
+        navigate('/home')
+
+        setUsername('')
+        setEmail('')
+        setPassword('')
+      } else {
+        toast.error(data.message || "Something went wrong")
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong.")
     }
 
-    setUsername('')
-    setEmail('')
-    setPassword('')
   }
 
   return (
-    <div className="flex justify-center items-center h-[90vh] bg-gray-50">
-      <div className="bg-white px-8 py-10 rounded shadow-lg w-[500px]">
+    <div className="flex justify-center items-center h-[85vh] bg-gray-50">
+      <div className="bg-white px-8 py-10 rounded border w-[500px]">
         <h2 className="text-3xl font-bold text-center mb-6 text-blue-600">Sign Up</h2>
 
         <form onSubmit={submitHandler} className="flex flex-col gap-6">

@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 const Homepage = () => {
   const [url, setUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
 
   const handleShorten = async () => {
     if (!url) return;
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/create/`, { url });
       setShortUrl(response.data.shortUrl);
-      setCopied(false);
+      setCopiedIndex(null);
     } catch (err) {
-      console.error(err);
       alert('Error shortening URL');
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shortUrl);
-    setCopied(true);
+  const handleCopy = (text, idx) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(idx);
+    toast.success("Link copied!")
+    setTimeout(() => setCopiedIndex(null), 1500);
   };
 
   return (
-    <div className="max-w-md mx-auto max-h-[90vh] mt-10 p-6 border rounded shadow">
+    <div className="max-w-xl mx-auto mt-10 p-6 border rounded">
       <h1 className="text-2xl font-bold mb-4 text-center">URL Shortener</h1>
       <input
         type="url"
@@ -43,12 +47,7 @@ const Homepage = () => {
       {shortUrl && (
         <div className="flex items-center justify-between border rounded px-3 py-2">
           <span className="truncate">{shortUrl}</span>
-          <button
-            onClick={handleCopy}
-            className="ml-2 bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
-          >
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
+          <button onClick={(e) => { e.stopPropagation(); handleCopy(shortUrl, 0); }} className="ml-2 bg-lime-200 p-1 h-10 w-10 rounded-full text-xl hover:bg-lime-300">{copiedIndex === 0 ? <i class='bx bxs-copy' ></i> : <i class='bx bx-copy' ></i>}</button>
         </div>
       )}
     </div>
