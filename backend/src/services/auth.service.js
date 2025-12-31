@@ -11,6 +11,7 @@ export const verifyUserCredentials = async (email, password) => {
     if (!user) throw new Error("invalid username or password");
 
     const isMatch = await bcrypt.compare(password, user.password);
+    
     if (!isMatch) throw new Error("invalid username or password");
     const token = signToken({ id: user._id });
     return { token, user };
@@ -23,7 +24,11 @@ export const registerUserWithToken = async (username, email, password) => {
 
     if (isUserExist) throw new Error("user alreay exist");
 
+    if (password.length < 8) {
+        throw new Error('Password must be at least 8 characters long')
+    }
+
     const user = await createUser(username, email, password);
     const token = signToken({ id: user._id });
-    return {token, user};
+    return { token, user };
 }

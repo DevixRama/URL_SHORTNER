@@ -48,9 +48,9 @@ const LoginPage = () => {
 
 
   return (
-    <div className="flex justify-center items-center h-[85vh] bg-gray-50">
-      <div className="bg-white px-8 py-10 rounded border w-[500px]">
-        <h2 className="text-3xl font-bold text-center mb-4 text-blue-600">Login</h2>
+    <div className="flex justify-center items-center h-[85vh]">
+      <div className="bg-white px-8 py-10 rounded-lg border w-[500px] max-w-md">
+        <h2 className="text-3xl font-bold text-center mb-4 text-gray-600">Login</h2>
         <form onSubmit={submitHandler} className="flex flex-col gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>

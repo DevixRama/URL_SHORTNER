@@ -54,7 +54,7 @@ const SignUpPage = () => {
   }
 
   return (
-    <div className="flex justify-center items-center h-[85vh] bg-gray-50">
+    <div className="flex justify-center items-center h-[85vh]">
       <div className="bg-white px-8 py-10 rounded border w-[500px]">
         <h2 className="text-3xl font-bold text-center mb-6 text-blue-600">Sign Up</h2>
 

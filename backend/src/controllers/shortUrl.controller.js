@@ -8,23 +8,14 @@ import { findUserById } from "../dao/user.dao.js";
 export const createShortUrl = async (req, res) => {
 
   try {
-    console.log("Line-9");
-    
     const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-    console.log("Line-12");
-    
     if (token) {
-      console.log("Line-14");
       const decoded = verifyToken(token);
-      console.log("Line-16");
-      console.log(decoded.id);
       const user = await findUserById(decoded.id);
-      console.log(user);
       req.user = user
-      console.log(req.user);
     }
   } catch (err) {
-    console.log("User not logged in");
+   throw new Error("User not logged in");
   }
 
   const { url, slug } = req.body;

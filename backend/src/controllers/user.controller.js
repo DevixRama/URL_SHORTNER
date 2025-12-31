@@ -9,3 +9,6 @@ export const getUserAllUrls = async (req, res) => {
     const urls = await findAllUserUrls(_id)
     res.status(200).json({success: true, message: "fetched All urls", urls })
 }
+
+
+
